@@ -1,3 +1,5 @@
+--The script will find the records which do not have atleast 1 HR record present in the table. The objective is to idenfity the 
+--records which are not having atleaset 1 HR system contributed details and to fix them.
 Insert into <SCHEMA>.<TABLE>
 (PRTY_ID_SALESPERS_FK_SRC_BS,PRTY_ID_SALESPERS_FK_SRC_XREF,PRTY_ID_CUST_FK_SRC_BS,PKEY_SRC_OBJECT,ROWID_SYSTEM,STATUS, LOAD_DATE)
 (select /*+ parallel(8) */ distinct rlnshp.PRTY_ID_SALESPERS_FK as PRTY_ID_SALESPERS_FK_SRC_BS,
@@ -16,6 +18,6 @@ where rlnshp.CR_STS_CD='ACT' and rlnshp.hub_state_ind=1 and prty.HUB_STATE_IND=1
 and RXRF.CR_STS_CD='ACT' and RXRF.hub_state_ind=1
 GROUP BY rlnshp.PRTY_ID_SALESPERS_FK, RXRF.PRTY_ID_SALESPERS_FK,RXRF.PKEY_SRC_OBJECT, RXRF.ROWID_SYSTEM, 'NEW',
 rlnshp.PRTY_ID_CUST_FK, sysdate
-HAVING SUM(CASE WHEN prty.rowid_system = 'HRMS' THEN 1 ELSE 0 END) =0);
+HAVING SUM(CASE WHEN prty.rowid_system = 'HR' THEN 1 ELSE 0 END) =0);
 
 commit;
