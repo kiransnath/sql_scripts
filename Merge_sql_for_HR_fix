@@ -1,0 +1,39 @@
+--This script will scan the history table for HR records previously associated with the sales person
+--Once previous record is found, it will order the records by last_update_timestamp and take the latest record out
+--Finally merges the latest record to the TMP table for the fix
+
+MERGE
+/*+ PARALLEL(8) */
+INTO <SCHEMA>.<TABLE> USING
+(SELECT SRC.PKEY_SRC_OBJECT,
+  PX.ROWID_OBJECT,
+  SRC.ROWID_XREF
+FROM
+  (SELECT
+    /*+ parallel(16) */
+    TMP.PRTY_ID_SALESPERS_FK_SRC_BS,
+    TMP.PKEY_SRC_OBJECT,
+    TMP.ROWID_SYSTEM,
+    HIST.ROWID_XREF,
+    row_number() over (partition BY TMP.PRTY_ID_SALESPERS_FK_SRC_BS,TMP.PRTY_ID_CUST_FK_SRC_BS order by HIST.LAST_UPDATE_DATE DESC) RN
+  FROM <SCHEMA>.<TABLE> HIST
+  INNER JOIN <SCHEMA>.<TABLE> TMP
+  ON HIST.ROWID_OBJECT=TMP.PRTY_ID_SALESPERS_FK_SRC_BS
+  INNER JOIN SCH_EZ_MDM.C_BO_PRTY_IDTFCN_XREF EMP
+  ON HIST.ROWID_XREF             =EMP.PRTY_ID
+  WHERE HIST.ROWID_SYSTEM        ='HRMS'
+  AND EMP.HUB_STATE_IND          =1
+  AND EMP.PRTY_IDTFCN_TYP_END_DT > TRUNC(SYSDATE)
+  AND HIST.PRTY_PERS_END_DT      > SYSDATE
+  ) SRC
+JOIN <SCHEMA>.<TABLE> PX
+ON PX.ROWID_XREF      = SRC.ROWID_XREF
+WHERE RN              =1
+AND PX.HUB_STATE_IND  =1
+AND PX.ROWID_SYSTEM   = 'HRMS'
+) HRM ON (TGT.PKEY_SRC_OBJECT = HRM.PKEY_SRC_OBJECT)
+WHEN MATCHED THEN
+  UPDATE
+  SET TGT.PRTY_ID_SALESPERS_FK_TGT_BS = HRM.ROWID_OBJECT,
+  TGT.PRTY_ID_SALESPERS_FK_TGT_XREF=HRM.ROWID_XREF;
+COMMIT;
