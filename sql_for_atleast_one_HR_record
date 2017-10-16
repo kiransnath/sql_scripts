@@ -1,5 +1,7 @@
 --The script will find the records which do not have atleast 1 HR record present in the table. The objective is to idenfity the 
---records which are not having atleaset 1 HR system contributed details and to fix them.
+--records which are not having atleaset 1 HR system contributed details and to fix them. The simple group by having combo will not
+--work as the join will result in multiple system provided raw records and we have to check at a party level, whether any of the sources 
+--is HRMS.
 -- if there is atleast 1 HR record the sum will be greater than 0. if not sum will be 0.
 -- The query will list all whose sum is 0 ie there is no HR records
 
