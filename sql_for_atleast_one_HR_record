@@ -1,5 +1,8 @@
 --The script will find the records which do not have atleast 1 HR record present in the table. The objective is to idenfity the 
 --records which are not having atleaset 1 HR system contributed details and to fix them.
+-- if there is atleast 1 HR record the sum will be greater than 0. if not sum will be 0.
+-- The query will list all whose sum is 0 ie there is no HR records
+
 Insert into <SCHEMA>.<TABLE>
 (PRTY_ID_SALESPERS_FK_SRC_BS,PRTY_ID_SALESPERS_FK_SRC_XREF,PRTY_ID_CUST_FK_SRC_BS,PKEY_SRC_OBJECT,ROWID_SYSTEM,STATUS, LOAD_DATE)
 (select /*+ parallel(8) */ distinct rlnshp.PRTY_ID_SALESPERS_FK as PRTY_ID_SALESPERS_FK_SRC_BS,
