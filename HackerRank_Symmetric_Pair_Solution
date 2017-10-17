@@ -1,0 +1,17 @@
+--The question was to list the symmetric pair based on the condition x1=y2 and x2=y1. But there was an additional condition 
+--that x2<x1.
+
+select f1.x,f1.y
+from functions f1
+join functions f2
+on f1.x=f2.y
+and f1.y=f2.x
+and f1.x<f2.x
+union
+(
+select x,y
+from functions f1
+where x=y
+and (select count(*) from functions where x=f1.x and y=f1.x)>1
+)
+order by x;
