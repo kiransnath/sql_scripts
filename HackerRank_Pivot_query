@@ -1,3 +1,5 @@
+--The problem was to get the names listed as per their job. The table was linear and we have to transpose to list in this way
+
 select Doctor,Professor,Singer,Actor from (
 (select name,occupation, row_number() over (partition by occupation order by name) as rno
 from occupations)
