@@ -1,0 +1,7 @@
+select Doctor,Professor,Singer,Actor from (
+(select name,occupation, row_number() over (partition by occupation order by name) as rno
+from occupations)
+pivot (min(name) for occupation in ('Doctor' as Doctor,'Professor' as Professor,'Singer' as Singer,'Actor' as Actor))
+)
+order by rno
+;
