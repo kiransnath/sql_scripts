@@ -1,0 +1,13 @@
+--Join the packages table based on ID and Friend_ID and compare the salaries of the student and his/her's best friend
+
+select s.name
+from students s
+join friends f
+on s.id = f.id
+join packages p
+on s.id = p.id 
+join packages pf
+on pf.ID = f.Friend_ID
+where (p.salary-pf.salary)<0
+order by pf.salary;
+
