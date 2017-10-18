@@ -1,0 +1,17 @@
+--Find the hacker_id, name and score 
+-- hackers can attend the challenges more than 1 attempt. If there are more than one score, take the highest score
+-- order in the descending order of score, if there is a tie order in the ascending order of hacker_id
+
+SELECT distinct hacker_id,name,score from
+(
+select  hacker_id,name,sum(c) over (partition by TMP.hacker_id) as score from
+(
+SELECT h.hacker_id as hacker_id,h.name as name,s.score as c,row_number() OVER (PARTITION BY h.hacker_id,s.challenge_id order by s.score desc) as rnk
+FROM Hackers h
+JOIN Submissions s
+ON h.hacker_id = s.hacker_id
+    ) TMP
+where tmp.rnk = 1
+)
+where score !=0
+order by score desc, hacker_id asc;
