@@ -1,0 +1,9 @@
+--The results table contains entries at country, athlete name, sports, gender level
+
+select Country, 
+sum (case when medal = 'Gold' then 1 else 0 end) as Gold_medal,
+sum (case when medal = 'Silver' then 1 else 0 end) as Silver_medal,
+sum (case when medal = 'Bronze' then 1 else 0 end) as Bronze_medal
+from results
+group by Country
+order by Gold_medal desc ,Silver_medal desc ,Bronze_medal desc;
